@@ -6,7 +6,7 @@ import ServicesSection from './components/ServicesSection';
 import ProjectsShowcase from './components/ProjectsShowcase';
 import ScreenshotLightbox from './components/ScreenshotLightbox';
 import ContactSection from './components/ContactSection';
-import { Terminal, Shield, ArrowUp, MessageSquare, Mail } from 'lucide-react';
+import { ArrowUp, MessageSquare, Mail } from 'lucide-react';
 
 const LinkedInIcon = ({ className = "w-4 h-4" }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -33,10 +33,11 @@ export default function App() {
   const profile = BRAND_DATA.profile;
   const projects = BRAND_DATA.projects;
 
-  // Sync document html lang & dir dynamically
+  // Sync document html lang, dir, and localized page title dynamically
   useEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = t.metaTitle;
     if (lang === 'ar') {
       document.body.classList.remove('font-en');
       document.body.classList.add('font-ar');
@@ -44,9 +45,9 @@ export default function App() {
       document.body.classList.remove('font-ar');
       document.body.classList.add('font-en');
     }
-  }, [lang]);
+  }, [lang, t.metaTitle]);
 
-  // Scroll to top indicator
+  // Scroll to top button visibility
   useEffect(() => {
     const checkScroll = () => {
       setShowScrollTop(window.scrollY > 400);
@@ -78,44 +79,24 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#090B10] text-slate-100 flex flex-col selection:bg-emerald-500/30 selection:text-emerald-300">
-      
-      {/* Top Sticky Header */}
-      <Navbar 
-        lang={lang} 
-        setLang={setLang} 
-        t={t} 
-        profile={profile} 
-      />
+      {/* Top Sticky Navigation Header */}
+      <Navbar lang={lang} setLang={setLang} t={t} profile={profile} />
 
-      {/* Main Page Sections */}
+      {/* Main Content Landmarks */}
       <main className="flex-1">
-        {/* 1. Hero & Engineering Philosophy */}
-        <Hero 
-          lang={lang} 
-          t={t} 
-          profile={profile} 
-        />
-
-        {/* 2. Core Capabilities & Architectural Pillars */}
-        <ServicesSection 
-          lang={lang} 
-          t={t} 
-        />
-
-        {/* 3. Verified Production Systems Showcase */}
-        <ProjectsShowcase 
-          lang={lang} 
-          t={t} 
+        <Hero lang={lang} t={t} profile={profile} />
+        <ServicesSection lang={lang} t={t} />
+        <ProjectsShowcase
+          lang={lang}
+          t={t}
           projects={projects}
           onOpenLightbox={handleOpenLightbox}
           onRequestSimilar={handleRequestSimilar}
         />
-
-        {/* 4. Client Inquiry Builder & Direct Contact */}
-        <ContactSection 
-          lang={lang} 
-          t={t} 
-          profile={profile} 
+        <ContactSection
+          lang={lang}
+          t={t}
+          profile={profile}
           selectedProject={selectedInquiryProject}
           setSelectedProject={setSelectedInquiryProject}
           projects={projects}
@@ -124,7 +105,7 @@ export default function App() {
 
       {/* Screenshot Lightbox Modal */}
       {activeLightboxProject && (
-        <ScreenshotLightbox 
+        <ScreenshotLightbox
           project={activeLightboxProject}
           initialIndex={lightboxInitialIndex}
           onClose={handleCloseLightbox}
@@ -137,33 +118,50 @@ export default function App() {
       {/* Floating Scroll to Top Button */}
       {showScrollTop && (
         <button
+          type="button"
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 rtl:right-auto rtl:left-6 z-30 p-3 rounded-full bg-[#111520]/90 hover:bg-emerald-500 hover:text-slate-950 text-slate-300 border border-white/[0.1] shadow-2xl transition-all duration-200 active:scale-95"
-          title="Scroll to top"
-          aria-label="Scroll to top"
+          className="fixed bottom-6 end-6 z-30 p-3 rounded-full bg-[#111520]/90 hover:bg-emerald-500 hover:text-slate-950 text-slate-300 border border-white/[0.1] shadow-2xl transition-all duration-200 active:scale-95"
+          title={lang === 'ar' ? 'العودة للأعلى' : 'Scroll to top'}
+          aria-label={lang === 'ar' ? 'العودة للأعلى' : 'Scroll to top'}
         >
           <ArrowUp className="w-5 h-5" />
         </button>
       )}
 
-      {/* Calm, Authoritative Footer */}
+      {/* Semantic Footer */}
       <footer className="bg-[#06080C] border-t border-white/[0.08] py-12 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-white/[0.06]">
-            
-            {/* Brand Logo & Motto */}
+            {/* Brand Logo & Description */}
             <div className="flex flex-col items-center md:items-start text-center md:text-start space-y-1">
-              <div className="flex items-center gap-2 font-mono-code font-bold text-white text-lg">
+              <div dir="ltr" className="inline-flex items-center font-mono-code font-bold text-white text-lg">
                 <span className="text-emerald-400">&lt;</span>
                 <span>aalij.dev</span>
                 <span className="text-emerald-400">/&gt;</span>
               </div>
-              <p className="text-xs text-slate-400 font-medium">
-                {t.footer.brand_tag}
-              </p>
+              <p className="text-xs text-slate-400 font-medium">{t.footer.brand_tag}</p>
             </div>
 
-            {/* Quick Links / Socials */}
+            {/* Footer Quick Nav */}
+            <nav
+              aria-label={t.footer.nav_title}
+              className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400"
+            >
+              <a href="#services" className="hover:text-emerald-400 transition-colors">
+                {t.nav.services}
+              </a>
+              <a href="#workflow" className="hover:text-emerald-400 transition-colors">
+                {t.nav.workflow}
+              </a>
+              <a href="#projects" className="hover:text-emerald-400 transition-colors">
+                {t.nav.projects}
+              </a>
+              <a href="#contact" className="hover:text-emerald-400 transition-colors">
+                {t.nav.contact}
+              </a>
+            </nav>
+
+            {/* Quick Socials */}
             <div className="flex items-center gap-3">
               <a
                 href={profile.whatsappUrl}
@@ -207,23 +205,18 @@ export default function App() {
                 <GitHubIcon className="w-4 h-4" />
               </a>
             </div>
-
           </div>
 
-          {/* Bottom Copyright & Guarantee */}
+          {/* Bottom Copyright & Motto */}
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-start">
-            <div>
-              {t.footer.rights.replace('{year}', new Date().getFullYear())}
-            </div>
-            <div className="flex items-center gap-2 font-mono-code text-[11px] text-slate-400">
+            <div>{t.footer.rights.replace('{year}', new Date().getFullYear())}</div>
+            <div className="flex items-center gap-2 text-[11px] text-slate-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
               <span>{t.footer.motto}</span>
             </div>
           </div>
-
         </div>
       </footer>
-
     </div>
   );
 }
